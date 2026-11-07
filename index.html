@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script>document.documentElement.classList.add('js');</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spatial Miner | Real-world data for physical AI in India and the GCC</title>
+<meta name="description" content="Spatial Miner captures egocentric, teleoperation and gripper data of skilled, hands-on work by real workers in real workplaces across India and the GCC — for training robots and humanoids.">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Spatial Miner | Real-world data for physical AI in India and the GCC">
+<meta property="og:description" content="Egocentric, teleop and gripper data of skilled work, captured with consent in real workplaces across India and the GCC.">
+<meta property="og:site_name" content="Spatial Miner">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Spatial Miner | Real-world data for physical AI in India and the GCC">
+<meta name="twitter:description" content="Egocentric, teleop and gripper data of skilled work, captured with consent in real workplaces across India and the GCC.">
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230B0C0E'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23E0A458'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%23E0A458' stroke-width='2' stroke-dasharray='3 5'/%3E%3C/svg%3E">
+
+<style>
+  :root {
+    --bg: #0B0C0E;
+    --bg-raised: #121317;
+    --fg: #EDEDE8;
+    --fg-dim: #A8A9A3;
+    --fg-faint: #787A74;
+    --accent: #E0A458;
+    --border: #262822;
+    --border-strong: #5C6053;
+    --maxw: 1180px;
+    --gutter: 24px;
+    --font-head: "Inter Tight", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-head);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img, svg { max-width: 100%; display: block; }
+
+  a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  a:hover { text-decoration: underline; }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: 0;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 10px 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    z-index: 100;
+  }
+  .skip-link:focus { left: 12px; top: 12px; }
+
+  .wrap {
+    width: 100%;
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .mono {
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0;
+  }
+
+  /* Header */
+  header.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(11, 12, 14, 0.88);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px var(--gutter);
+    max-width: var(--maxw);
+    margin: 0 auto;
+  }
+  .wordmark {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+  .wordmark:hover { text-decoration: none; color: var(--fg); }
+  .wordmark .dot { color: var(--accent); }
+
+  .btn {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    padding: 10px 18px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #1A1304;
+    font-weight: 600;
+  }
+  .btn-primary:hover { opacity: 0.88; text-decoration: none; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--fg);
+    border-color: var(--border-strong);
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+  header .btn-primary { padding: 9px 16px; }
+
+  /* Hero */
+  .hero {
+    padding: 56px 0 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .hero-grid > * { min-width: 0; }
+  .hero h1 {
+    font-size: clamp(32px, 4.4vw, 54px);
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+    margin: 0 0 22px;
+    font-weight: 600;
+  }
+  .hero .subhead {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--fg-dim);
+    max-width: 46ch;
+    margin: 0 0 24px;
+  }
+  .hero-ctas {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .hero-ctas .btn { padding: 13px 24px; font-size: 14px; }
+  .hero-locations {
+    font-size: 12.5px;
+    color: var(--fg-faint);
+    letter-spacing: 0.08em;
+  }
+  .hero-locations .accent-sep { color: var(--accent); margin: 0 2px; }
+
+  .hero-visual-wrap { width: 100%; }
+  .hero-visual-svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
+  .grid-dot { fill: var(--fg); opacity: 0.08; }
+  .scan-ring { fill: none; stroke: var(--border-strong); stroke-width: 1; opacity: 0.55; }
+  .cloud-dot { fill: var(--accent); }
+  .skeleton-line { stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; opacity: 0.9; }
+  .skeleton-joint { fill: var(--accent); }
+  .skeleton-head { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .gripper-jaw { stroke: var(--accent); stroke-width: 2; stroke-linecap: round; fill: none; }
+  .scan-line { fill: var(--accent); opacity: 0.4; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scan-line { animation: scanmove 8s ease-in-out infinite; }
+    @keyframes scanmove {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(516px); }
+    }
+    .figure-drift { animation: driftmove 11s ease-in-out infinite; }
+    @keyframes driftmove {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(6px, -5px); }
+    }
+  }
+
+  @media (max-width: 860px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero { padding: 64px 0 48px; }
+  }
+
+  main section {
+    padding: 88px 0;
+    scroll-margin-top: 90px;
+  }
+
+  h2 {
+    font-size: clamp(26px, 3vw, 38px);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    font-weight: 600;
+    margin: 0 0 20px;
+  }
+
+  .section-intro {
+    font-size: 17px;
+    color: var(--fg-dim);
+    max-width: none;
+    margin: 0 0 48px;
+    line-height: 1.65;
+  }
+
+  /* Why here */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .stat-tile {
+    background: var(--bg);
+    padding: 32px 28px;
+    position: relative;
+  }
+  .stat-value {
+    font-family: var(--font-mono);
+    font-size: 36px;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .stat-caption {
+    font-size: 14px;
+    color: var(--fg-dim);
+  }
+  @media (max-width: 760px) {
+    .stat-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Contact */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 56px;
+  }
+  .contact-copy h2 { margin-bottom: 16px; }
+  .contact-copy p {
+    color: var(--fg-dim);
+    font-size: 16px;
+    line-height: 1.65;
+    max-width: 38ch;
+  }
+  .book-call {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .book-call p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--fg-faint);
+  }
+
+  form {
+    display: grid;
+    gap: 20px;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 8px;
+  }
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    color: var(--fg);
+    padding: 12px 14px;
+    font-family: var(--font-head);
+    font-size: 15px;
+    border-radius: 3px;
+  }
+  input::placeholder, textarea::placeholder { color: var(--fg-faint); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+  input[aria-invalid="true"] {
+    border-color: #D9705A;
+  }
+  textarea { min-height: 110px; resize: vertical; }
+  select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--fg-dim) 50%), linear-gradient(135deg, var(--fg-dim) 50%, transparent 50%);
+    background-position: calc(100% - 20px) calc(50% - 3px), calc(100% - 15px) calc(50% - 3px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .form-status {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--fg-dim);
+    min-height: 18px;
+  }
+  @media (max-width: 760px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .field-row { grid-template-columns: 1fr; }
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+  }
+  .footer-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .footer-links {
+    display: flex;
+    gap: 22px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--fg-dim);
+  }
+  .footer-links a { color: var(--fg-dim); }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copyright {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--fg-faint);
+  }
+
+  /* Confirmation modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 12, 14, 0.78);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 300;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-overlay.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-box {
+    background: var(--bg-raised);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    padding: 32px;
+    max-width: 420px;
+    width: 100%;
+  }
+  .modal-box h3 {
+    font-size: 20px;
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+  .modal-box p {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--fg-dim);
+    margin: 0 0 24px;
+  }
+
+  /* Scroll reveal — only hides content once JS confirms it can reveal it again */
+  .reveal {
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  html.js .reveal:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .reveal:not(.is-visible) { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="wordmark" href="#top">Spatial Miner<span class="dot">.</span></a>
+    <a class="btn btn-primary" href="#contact">Request data</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div>
+        <h1>Real-world data for physical AI, from India and the Gulf.</h1>
+        <p class="subhead">Spatial Miner supports the training of humanoids and robots with real-world data. We capture egocentric, teleoperation and gripper demonstrations across India and the GCC region.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#contact">Request data</a>
+        </div>
+        <p class="mono hero-locations">India <span class="accent-sep">·</span> Doha <span class="accent-sep">·</span> Dubai <span class="accent-sep">·</span> Riyadh <span class="accent-sep">·</span> Muscat <span class="accent-sep">·</span> Manama</p>
+      </div>
+
+      <div class="hero-visual-wrap">
+        <svg class="hero-visual-svg" viewBox="0 0 520 520" role="img" aria-label="Abstract wireframe illustration of a humanoid figure surrounded by a scattered point cloud of captured 3D data, representing egocentric, teleoperation and gripper data capture." xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="dotgrid" width="22" height="22" patternUnits="userSpaceOnUse">
+              <circle class="grid-dot" cx="2" cy="2" r="1.3"></circle>
+            </pattern>
+          </defs>
+          <rect x="0" y="0" width="520" height="520" fill="url(#dotgrid)"></rect>
+
+          <circle class="scan-ring" cx="260" cy="260" r="160"></circle>
+          <circle class="scan-ring" cx="260" cy="260" r="210"></circle>
+
+          <g class="point-cloud">
+            <circle class="cloud-dot" cx="130" cy="90" r="2" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="420" cy="60" r="2.2" fill-opacity="0.4"></circle>
+            <circle class="cloud-dot" cx="90" cy="180" r="1.8" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="460" cy="200" r="2" fill-opacity="0.35"></circle>
+            <circle class="cloud-dot" cx="70" cy="320" r="1.6" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="480" cy="330" r="1.8" fill-opacity="0.28"></circle>
+            <circle class="cloud-dot" cx="150" cy="420" r="2.2" fill-opacity="0.4"></circle>
+            <circle class="cloud-dot" cx="380" cy="460" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="260" cy="30" r="1.6" fill-opacity="0.35"></circle>
+            <circle class="cloud-dot" cx="340" cy="40" r="1.4" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="180" cy="60" r="1.6" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="110" cy="140" r="2" fill-opacity="0.4"></circle>
+            <circle class="cloud-dot" cx="430" cy="140" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="60" cy="250" r="2" fill-opacity="0.35"></circle>
+            <circle class="cloud-dot" cx="470" cy="270" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="100" cy="400" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="420" cy="400" r="2" fill-opacity="0.35"></circle>
+            <circle class="cloud-dot" cx="240" cy="480" r="2" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="320" cy="490" r="1.6" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="200" cy="10" r="1.4" fill-opacity="0.2"></circle>
+            <circle class="cloud-dot" cx="360" cy="480" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="50" cy="80" r="1.4" fill-opacity="0.2"></circle>
+            <circle class="cloud-dot" cx="480" cy="90" r="1.6" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="40" cy="460" r="1.4" fill-opacity="0.2"></circle>
+            <circle class="cloud-dot" cx="490" cy="460" r="1.6" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="150" cy="300" r="2.4" fill-opacity="0.4"></circle>
+            <circle class="cloud-dot" cx="370" cy="300" r="2.2" fill-opacity="0.35"></circle>
+            <circle class="cloud-dot" cx="230" cy="150" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="290" cy="180" r="1.6" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="260" cy="330" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="190" cy="380" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="330" cy="390" r="1.8" fill-opacity="0.3"></circle>
+            <circle class="cloud-dot" cx="210" cy="210" r="1.6" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="310" cy="230" r="1.6" fill-opacity="0.25"></circle>
+            <circle class="cloud-dot" cx="260" cy="420" r="1.8" fill-opacity="0.3"></circle>
+          </g>
+
+          <g class="figure-drift">
+            <g class="skeleton">
+              <line class="skeleton-line" x1="260" y1="98" x2="260" y2="88"></line>
+              <line class="skeleton-line" x1="260" y1="98" x2="210" y2="122"></line>
+              <line class="skeleton-line" x1="260" y1="98" x2="305" y2="112"></line>
+              <line class="skeleton-line" x1="210" y1="122" x2="305" y2="112"></line>
+              <line class="skeleton-line" x1="210" y1="122" x2="180" y2="185"></line>
+              <line class="skeleton-line" x1="180" y1="185" x2="165" y2="250"></line>
+              <line class="skeleton-line" x1="305" y1="112" x2="355" y2="150"></line>
+              <line class="skeleton-line" x1="355" y1="150" x2="400" y2="120"></line>
+              <line class="skeleton-line" x1="260" y1="98" x2="260" y2="260"></line>
+              <line class="skeleton-line" x1="260" y1="260" x2="230" y2="270"></line>
+              <line class="skeleton-line" x1="260" y1="260" x2="290" y2="270"></line>
+              <line class="skeleton-line" x1="230" y1="270" x2="290" y2="270"></line>
+              <line class="skeleton-line" x1="230" y1="270" x2="220" y2="355"></line>
+              <line class="skeleton-line" x1="220" y1="355" x2="215" y2="440"></line>
+              <line class="skeleton-line" x1="290" y1="270" x2="300" y2="350"></line>
+              <line class="skeleton-line" x1="300" y1="350" x2="305" y2="435"></line>
+
+              <circle class="skeleton-head" cx="260" cy="70" r="18"></circle>
+              <circle class="skeleton-joint" cx="210" cy="122" r="4"></circle>
+              <circle class="skeleton-joint" cx="305" cy="112" r="4"></circle>
+              <circle class="skeleton-joint" cx="180" cy="185" r="4"></circle>
+              <circle class="skeleton-joint" cx="355" cy="150" r="4"></circle>
+              <circle class="skeleton-joint" cx="165" cy="250" r="4"></circle>
+              <circle class="skeleton-joint" cx="260" cy="260" r="4"></circle>
+              <circle class="skeleton-joint" cx="230" cy="270" r="4"></circle>
+              <circle class="skeleton-joint" cx="290" cy="270" r="4"></circle>
+              <circle class="skeleton-joint" cx="220" cy="355" r="4"></circle>
+              <circle class="skeleton-joint" cx="300" cy="350" r="4"></circle>
+              <circle class="skeleton-joint" cx="215" cy="440" r="4"></circle>
+              <circle class="skeleton-joint" cx="305" cy="435" r="4"></circle>
+            </g>
+
+            <g class="gripper">
+              <path class="gripper-jaw" d="M400 120 L424 98"></path>
+              <path class="gripper-jaw" d="M400 120 L424 142"></path>
+              <circle class="skeleton-joint" cx="400" cy="120" r="4"></circle>
+            </g>
+          </g>
+
+          <rect class="scan-line" x="0" y="0" width="520" height="2"></rect>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="why-here">
+    <div class="wrap reveal">
+      <span class="label">WHY HERE</span>
+      <h2>Most physical-AI data comes from Western workplaces.</h2>
+      <p class="section-intro">Robots and humanoids trained in simulation still need real-world data to learn how objects, tools and materials actually behave. India and the Gulf add workplaces, tools, layouts, climates and working practices that current datasets rarely include, from dense urban workshops to large-scale industrial and logistics sites. We work directly with skilled workers across these environments, with consent, to bring them into robot training data.</p>
+
+      <div class="stat-grid">
+        <div class="stat-tile">
+          <span class="mono stat-value">250+</span>
+          <span class="stat-caption">venues onboarded</span>
+        </div>
+        <div class="stat-tile">
+          <span class="mono stat-value">30+</span>
+          <span class="stat-caption">environment types</span>
+        </div>
+        <div class="stat-tile">
+          <span class="mono stat-value">10k+</span>
+          <span class="stat-caption">hours captured</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section id="contact">
+    <div class="wrap reveal">
+      <span class="label">CONTACT</span>
+      <div class="contact-grid">
+        <div class="contact-copy">
+          <h2>Need data from environments no one else covers?</h2>
+          <p>Tell us what you're training, and the manipulation or interaction data it needs. We'll follow up with what we have.</p>
+          <div class="book-call">
+            <p>Or <a href="https://calendar.app.google/wFMFpb1hnUSunjcX6" target="_blank" rel="noopener noreferrer">book a 30-minute call</a>.</p>
+          </div>
+        </div>
+
+        <div>
+          <form id="contact-form" novalidate>
+            <div class="field-row">
+              <div>
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required autocomplete="name">
+              </div>
+              <div>
+                <label for="organisation">Organisation</label>
+                <input type="text" id="organisation" name="organisation" required autocomplete="organization">
+              </div>
+            </div>
+
+            <div>
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" required autocomplete="email">
+            </div>
+
+            <div>
+              <label for="dataType">Data type</label>
+              <select id="dataType" name="dataType" required>
+                <option value="" disabled selected>Select one</option>
+                <option value="Egocentric">Egocentric</option>
+                <option value="Teleop">Teleop</option>
+                <option value="Gripper">Gripper</option>
+                <option value="Multiple">Multiple</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="message">Message</label>
+              <textarea id="message" name="message" required placeholder="What are you training, and what data do you need?"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Request data</button>
+            <p class="form-status mono" id="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="modal-overlay" id="confirm-modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-describedby="confirm-modal-desc" hidden>
+  <div class="modal-box">
+    <span class="label">Request sent</span>
+    <h3 id="confirm-modal-title">Thanks — we've got it.</h3>
+    <p id="confirm-modal-desc">Your email client should open with your message ready to send.</p>
+    <button type="button" class="btn btn-primary" id="confirm-modal-close">Got it</button>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap footer-inner">
+    <div class="footer-left">
+      <span class="wordmark">Spatial Miner<span class="dot">.</span></span>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/rohith-kr" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+    <p class="footer-copyright">© 2026 Spatial Miner</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    "use strict";
+
+    var CONTACT_EMAIL = "rohith1947@gmail.com";
+
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    var revealEls = document.querySelectorAll(".reveal");
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      revealEls.forEach(function (el) { el.classList.add("is-visible"); });
+    } else {
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach(function (el) { observer.observe(el); });
+    }
+
+    var form = document.getElementById("contact-form");
+    var status = document.getElementById("form-status");
+
+    var modal = document.getElementById("confirm-modal");
+    var modalDesc = document.getElementById("confirm-modal-desc");
+    var modalClose = document.getElementById("confirm-modal-close");
+    var lastFocused = null;
+
+    modalDesc.textContent = "Your email client should open with your message ready to send. If it doesn't, email us directly at " + CONTACT_EMAIL + ".";
+
+    var outsideModal = document.querySelectorAll("header.site-header, main, footer");
+
+    function openModal() {
+      lastFocused = document.activeElement;
+      modal.hidden = false;
+      requestAnimationFrame(function () { modal.classList.add("is-open"); });
+      modalClose.focus();
+      outsideModal.forEach(function (el) { el.setAttribute("aria-hidden", "true"); });
+      document.addEventListener("keydown", onModalKeydown);
+    }
+
+    function closeModal() {
+      modal.classList.remove("is-open");
+      modal.hidden = true;
+      outsideModal.forEach(function (el) { el.removeAttribute("aria-hidden"); });
+      document.removeEventListener("keydown", onModalKeydown);
+      if (lastFocused) { lastFocused.focus(); }
+    }
+
+    function onModalKeydown(e) {
+      if (e.key === "Escape") {
+        closeModal();
+      } else if (e.key === "Tab") {
+        // single focusable element in the modal: keep focus trapped on it
+        e.preventDefault();
+        modalClose.focus();
+      }
+    }
+
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) { closeModal(); }
+    });
+
+    var emailInput = document.getElementById("email");
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    emailInput.addEventListener("input", function () {
+      emailInput.removeAttribute("aria-invalid");
+    });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      var name = document.getElementById("name").value.trim();
+      var organisation = document.getElementById("organisation").value.trim();
+      var email = emailInput.value.trim();
+      var dataType = document.getElementById("dataType").value;
+      var message = document.getElementById("message").value.trim();
+
+      if (!name || !organisation || !email || !dataType || !message) {
+        status.textContent = "Fill in every field to continue.";
+        return;
+      }
+
+      if (!emailPattern.test(email)) {
+        status.textContent = "Enter a valid email address.";
+        emailInput.setAttribute("aria-invalid", "true");
+        emailInput.focus();
+        return;
+      }
+
+      var subject = "Data request: " + dataType + " — " + name;
+      var bodyLines = [
+        "Name: " + name,
+        "Organisation: " + organisation,
+        "Email: " + email,
+        "Data type: " + dataType,
+        "",
+        message
+      ];
+
+      var mailto = "mailto:" + CONTACT_EMAIL +
+        "?subject=" + encodeURIComponent(subject) +
+        "&body=" + encodeURIComponent(bodyLines.join("\n"));
+
+      window.location.href = mailto;
+      status.textContent = "";
+      form.reset();
+      openModal();
+    });
+  })();
+</script>
+
+</body>
+</html>
