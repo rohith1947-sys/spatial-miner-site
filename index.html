@@ -602,7 +602,11 @@
         </div>
 
         <div>
-          <form id="contact-form" novalidate>
+          <form id="contact-form" action="https://formsubmit.co/rohith1947@gmail.com" method="POST" novalidate>
+            <input type="hidden" name="_subject" value="New data request — Spatial Miner">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
             <div class="field-row">
               <div>
                 <label for="name">Name</label>
@@ -649,7 +653,7 @@
   <div class="modal-box">
     <span class="label">Request sent</span>
     <h3 id="confirm-modal-title">Thanks — we've got it.</h3>
-    <p id="confirm-modal-desc">Your email client should open with your message ready to send.</p>
+    <p id="confirm-modal-desc">We've received your request and will get back to you soon.</p>
     <button type="button" class="btn btn-primary" id="confirm-modal-close">Got it</button>
   </div>
 </div>
@@ -697,7 +701,7 @@
     var modalClose = document.getElementById("confirm-modal-close");
     var lastFocused = null;
 
-    modalDesc.textContent = "Your email client should open with your message ready to send. If it doesn't, email us directly at " + CONTACT_EMAIL + ".";
+    modalDesc.textContent = "We've received your request and will get back to you soon.";
 
     var outsideModal = document.querySelectorAll("header.site-header, main, footer");
 
@@ -740,6 +744,8 @@
       emailInput.removeAttribute("aria-invalid");
     });
 
+    var submitBtn = form.querySelector('button[type="submit"]');
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -761,24 +767,41 @@
         return;
       }
 
-      var subject = "Data request: " + dataType + " — " + name;
-      var bodyLines = [
-        "Name: " + name,
-        "Organisation: " + organisation,
-        "Email: " + email,
-        "Data type: " + dataType,
-        "",
-        message
-      ];
+      status.textContent = "Sending…";
+      submitBtn.disabled = true;
 
-      var mailto = "mailto:" + CONTACT_EMAIL +
-        "?subject=" + encodeURIComponent(subject) +
-        "&body=" + encodeURIComponent(bodyLines.join("\n"));
-
-      window.location.href = mailto;
-      status.textContent = "";
-      form.reset();
-      openModal();
+      fetch("https://formsubmit.co/ajax/" + CONTACT_EMAIL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          organisation: organisation,
+          email: email,
+          dataType: dataType,
+          message: message,
+          _subject: "Data request: " + dataType + " — " + name,
+          _template: "table",
+          _captcha: "false"
+        })
+      })
+        .then(function (response) {
+          if (!response.ok) { throw new Error("Request failed"); }
+          return response.json();
+        })
+        .then(function () {
+          status.textContent = "";
+          form.reset();
+          openModal();
+        })
+        .catch(function () {
+          status.textContent = "Something went wrong sending that. Please email us directly at " + CONTACT_EMAIL + ".";
+        })
+        .finally(function () {
+          submitBtn.disabled = false;
+        });
     });
   })();
 </script>
